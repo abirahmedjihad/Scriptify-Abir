@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Scriptify - Splitter Pro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=Orbitron:wght@600;800;900&family=Plus+Jakarta+Sans:wght@400;600;700" rel="stylesheet">
+    <style>
+        :root {
+            --bg-black: #000000; 
+            --panel-bg: #05070a; 
+            --accent-cyan: #00f0ff; 
+            --accent-blue: #38bdf8;
+            --neon-pink: #ff007f;  
+            --text-main: #f1f5f9; 
+            --text-muted: #64748b;
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --active-glow: rgba(0, 240, 255, 0.25);
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body { 
+            margin: 0; 
+            padding: 0; 
+            background-color: var(--bg-black); 
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: var(--text-main);
+            min-height: 100vh;
+        }
+
+        body { 
+            display: flex; 
+            flex-direction: column; 
+            background: #000000;
+        }
+
+        .container { 
+            flex: 1; 
+            padding: 16px; 
+            max-width: 900px; 
+            margin: 0 auto; 
+            width: 100%; 
+            z-index: 10;
+        }
+        
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 14px;
+            margin-bottom: 16px;
+            gap: 10px;
+        }
+
+        .brand-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: nowrap;
+        }
+
+        .brand-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 24px;
+            font-weight: 900;
+            letter-spacing: 1px;
+            white-space: nowrap;
+            background: linear-gradient(270deg, #ffffff, #38bdf8, #a855f7, #00f0ff, #ffffff);
+            background-size: 400% 400%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0;
+            line-height: 1.1;
+            animation: colorShiftAnimation 6s ease infinite;
+        }
+
+        @keyframes colorShiftAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .brand-subtitle {
+            font-size: 7px;
+            color: #ffffff;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            font-family: 'Orbitron', sans-serif;
+            margin: 0;
+            white-space: nowrap;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+
+        /* ===== User chip (header) ===== */
+        .user-chip {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 3px 4px 3px 3px;
+            min-width: 0;
+        }
+        .user-chip img {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1px solid var(--accent-cyan);
+            flex-shrink: 0;
+            background: #0f172a;
+        }
+        .user-name {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-main);
+            max-width: 90px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .logout-btn {
+            background: rgba(255, 0, 127, 0.12);
+            border: 1px solid var(--neon-pink);
+            color: var(--neon-pink);
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            flex-shrink: 0;
+            transition: all 0.2s;
+        }
+        .logout-btn:hover { background: var(--neon-pink); color: #fff; }
+
+        /* ===== Login screen ===== */
+        #loginScreen {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            padding: 20px;
+        }
+        .login-card {
+            width: 100%;
+            max-width: 340px;
+            background: var(--panel-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 32px 24px;
+            text-align: center;
+            box-shadow: 0 0 40px rgba(0, 240, 255, 0.08);
+        }
+        .login-card .brand-title {
+            font-size: 32px;
+            display: inline-block;
+        }
+        .login-sub {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 9px;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin: 8px 0 28px 0;
+        }
+        .google-btn {
+            width: 100%;
+            background: #ffffff;
+            color: #1f2937;
+            border: none;
+            border-radius: 10px;
+            padding: 13px 16px;
+            font-weight: 700;
+            font-size: 13px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.2s;
+        }
+        .google-btn:hover { box-shadow: 0 0 18px rgba(0, 240, 255, 0.45); transform: translateY(-1px); }
+        .google-btn:disabled { opacity: 0.6; cursor: wait; transform: none; }
+        .google-btn svg { width: 20px; height: 20px; flex-shrink: 0; }
+        .login-error {
+            color: var(--neon-pink);
+            font-size: 11px;
+            margin-top: 14px;
+            min-height: 14px;
+            line-height: 1.5;
+        }
+        .login-loading {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 10px;
+            color: var(--accent-cyan);
+            letter-spacing: 1px;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .file-label { 
+            cursor: pointer; 
+            font-size: 10px; 
+            font-weight: 700; 
+            background: rgba(255,255,255,0.03); 
+            color: var(--accent-blue); 
+            padding: 6px 12px; 
+            border-radius: 6px; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 6px; 
+            border: 1px solid var(--glass-border); 
+            font-family: 'Orbitron', sans-serif; 
+            transition: all 0.25s; 
+            letter-spacing: 0.5px;
+        }
+        .file-label:hover { 
+            background: rgba(56, 189, 248, 0.12); 
+            border-color: var(--accent-blue); 
+        }
+
+        .word-count-top { 
+            font-family: 'Orbitron', sans-serif; 
+            font-size: 10px; 
+            color: var(--accent-cyan); 
+            font-weight: 700; 
+            letter-spacing: 0.5px;
+            background: rgba(0, 240, 255, 0.05);
+            padding: 4px 8px;
+            border-radius: 4px;
+            border: 1px solid rgba(0, 240, 255, 0.15);
+        }
+
+        .glass-panel {
+            background: var(--panel-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 12px;
+            width: 100%;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .input-wrapper { position: relative; width: 100%; }
+
+        textarea { 
+            width: 100%; 
+            height: 480px; 
+            background: #000000; 
+            border: 1px solid var(--glass-border); 
+            border-radius: 8px; 
+            padding: 14px; 
+            padding-right: 48px; 
+            box-sizing: border-box; 
+            font-size: 13.5px; 
+            color: var(--text-main);
+            outline: none; 
+            resize: vertical; 
+            display: block; 
+            transition: border-color 0.3s, box-shadow 0.3s; 
+            font-family: 'Fira Code', monospace;
+            line-height: 1.6;
+        }
+        
+        textarea:focus {
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 12px var(--active-glow);
+        }
+        
+        .action-tray { 
+            position: absolute; 
+            top: 12px; 
+            right: 12px; 
+            z-index: 10; 
+        }
+        
+        .icon-btn { 
+            background: rgba(255, 0, 127, 0.12);
+            border: 1px solid var(--neon-pink);
+            border-radius: 6px;
+            width: 36px; 
+            height: 36px; 
+            cursor: pointer; 
+            display: none; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 15px; 
+            color: var(--neon-pink); 
+            transition: all 0.2s ease;
+        }
+        .icon-btn:hover { background: var(--neon-pink); color: #fff; }
+        
+        .search-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            width: 100%;
+        }
+
+        .search-input-wrapper {
+            flex: 1;
+        }
+
+        input[type="text"] { 
+            width: 100%; 
+            background: #000000; 
+            border: 1px solid var(--glass-border); 
+            padding: 10px 14px; 
+            border-radius: 8px; 
+            outline: none; 
+            font-size: 13px; 
+            color: #ffffff; 
+            font-family: inherit; 
+            transition: all 0.3s; 
+        }
+        input[type="text"]:focus { 
+            border-color: var(--accent-cyan); 
+            box-shadow: 0 0 10px var(--active-glow);
+        }
+
+        .extract-btn {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+            color: #000000;
+            border: none;
+            padding: 0 18px;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.2s ease;
+            height: 40px;
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+        }
+        .extract-btn:hover { opacity: 0.95; box-shadow: 0 0 15px rgba(0, 240, 255, 0.4); }
+
+        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; display: none; }
+        
+        .cut-btn { 
+            background: transparent; 
+            color: var(--accent-cyan); 
+            border: 1px solid var(--accent-cyan); 
+            padding: 13px; 
+            border-radius: 8px; 
+            font-weight: 700; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 8px; 
+            font-size: 12px; 
+            font-family: 'Orbitron', sans-serif; 
+            transition: all 0.3s; 
+            text-transform: uppercase; 
+        }
+        .cut-btn:hover { background: var(--accent-cyan); color: #000000; }
+
+        .download-btn { 
+            background: transparent; 
+            color: #d8b4fe; 
+            border: 1px solid #c084fc; 
+            padding: 13px; 
+            border-radius: 8px; 
+            font-weight: 700; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 8px; 
+            font-size: 12px; 
+            font-family: 'Orbitron', sans-serif; 
+            transition: all 0.3s; 
+            text-transform: uppercase; 
+        }
+        .download-btn:hover { background: #c084fc; color: #000000; }
+        
+        .undo-btn-wrapper { display: flex; justify-content: center; margin-top: 14px; }
+        .undo-btn { 
+            display: none; 
+            background: #0f172a; 
+            color: #ffffff; 
+            border: 1px solid rgba(255,255,255,0.15); 
+            padding: 10px 20px; 
+            border-radius: 8px; 
+            font-weight: 700; 
+            cursor: pointer; 
+            align-items: center; 
+            gap: 8px; 
+            font-size: 11px; 
+            font-family: 'Orbitron', sans-serif; 
+            transition: all 0.2s; 
+            text-transform: uppercase; 
+        }
+        .undo-btn:hover { background: #1e293b; border-color: var(--accent-cyan); }
+
+        .result-box { 
+            background: #000000; 
+            border: 1px solid var(--glass-border); 
+            padding: 16px; 
+            white-space: pre-wrap; 
+            border-radius: 8px; 
+            font-size: 13.5px; 
+            margin-top: 10px; 
+            display: none; 
+            color: var(--text-main); 
+            line-height: 1.7; 
+            width: 100%; 
+            font-family: 'Fira Code', monospace; 
+        }
+        
+        .highlight-name-0 { color: #facc15; font-weight: 700; } 
+        .highlight-name-1 { color: #4ade80; font-weight: 700; } 
+        .highlight-name-2 { color: #38bdf8; font-weight: 700; } 
+        .highlight-name-3 { color: #a855f7; font-weight: 700; } 
+
+        .highlight-hash { color: var(--neon-pink); font-weight: 700; display: block; margin-bottom: 6px; }
+        .highlight-title { color: var(--neon-pink); font-weight: 800; display: block; margin-bottom: 12px; font-size: 15px; border-bottom: 1px solid var(--glass-border); padding-bottom: 8px; font-family: 'Orbitron', sans-serif; text-transform: uppercase; letter-spacing: 1px; }
+        .highlight-meta { color: var(--accent-blue); font-weight: 700; display: block; border-bottom: 1px dashed var(--glass-border); padding-bottom: 8px; margin-bottom: 12px; font-family: 'Orbitron', sans-serif; font-size: 11px; }
+
+        .counter-text { text-align: center; color: var(--accent-cyan); font-weight: 700; margin: 12px 0 6px 0; display: none; font-size: 11px; font-family: 'Orbitron', sans-serif; letter-spacing: 0.5px; }
+
+        #toast { position: fixed; bottom: -70px; left: 50%; transform: translateX(-50%); background: #090d16; color: var(--accent-cyan); padding: 12px 24px; border-radius: 8px; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 4000; display: flex; align-items: center; gap: 8px; font-size: 11px; border: 1px solid var(--glass-border); font-family: 'Orbitron', sans-serif; box-shadow: 0 10px 25px rgba(0,0,0,0.8); }
+        #toast.show { bottom: 35px; }
+
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.88); display: none; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(5px); }
+        .modal-box { background: #05070a; padding: 24px; border-radius: 12px; text-align: center; max-width: 310px; border: 1px solid var(--glass-border); color: #fff; }
+        .modal-btn-group { display: flex; gap: 10px; margin-top: 18px; }
+        .modal-btn { flex: 1; padding: 10px; border: none; border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 11px; font-family: 'Orbitron', sans-serif; transition: all 0.2s; text-transform: uppercase; }
+        .modal-btn.cancel { background: #1e293b; color: #fff; }
+        .modal-btn.confirm { background: var(--neon-pink); color: white; }
+
+        .scroll-nav-container {
+            position: fixed;
+            bottom: 25px;
+            right: 18px;
+            z-index: 9999;
+            display: none; 
+        }
+
+        .scroll-nav-btn {
+            background: #05070a;
+            border: 1px solid var(--accent-cyan);
+            color: var(--accent-cyan);
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            display: flex; 
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 15px rgba(0, 240, 255, 0.25);
+        }
+        .scroll-nav-btn:hover { background: var(--accent-cyan); color: #000; box-shadow: 0 0 20px var(--accent-cyan); }
+    </style>
+<style>
+/* Scriptify account drawer + credits enhancement */
+.menu-trigger{border:1px solid rgba(0,240,255,.35);background:#071018;color:var(--accent-cyan);border-radius:9px;width:40px;height:40px;font-size:18px;cursor:pointer;flex-shrink:0}
+.header-left{display:flex;align-items:center;gap:10px;min-width:0}
+.drawer-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:5000;display:none;backdrop-filter:blur(4px)}
+.drawer-backdrop.open{display:block}
+.account-drawer{position:absolute;left:0;top:0;height:100%;width:min(330px,88vw);overflow:auto;background:#070b12;border-right:1px solid rgba(0,240,255,.3);padding:20px;box-shadow:10px 0 40px #000}
+.drawer-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}
+.drawer-close{background:transparent;border:1px solid #334155;color:#fff;border-radius:8px;padding:7px 10px;cursor:pointer}
+.profile-card,.credit-card,.premium-card{background:linear-gradient(145deg,#0c1722,#080b12);border:1px solid rgba(0,240,255,.18);border-radius:14px;padding:16px;margin-bottom:14px}
+.profile-row{display:flex;align-items:center;gap:12px}
+.profile-row img{width:52px;height:52px;object-fit:cover;border-radius:50%;border:2px solid var(--accent-cyan);background:#172033}
+.profile-name{font-weight:800;font-size:14px;overflow-wrap:anywhere}.profile-email{font-size:11px;color:#94a3b8;overflow-wrap:anywhere;margin-top:4px}
+.readonly-tag{font-size:9px;color:#67e8f9;border:1px solid #155e75;border-radius:20px;padding:4px 7px;display:inline-block;margin-top:8px}
+.feature-label{font-family:Orbitron,sans-serif;font-size:10px;letter-spacing:1px;color:#94a3b8;margin-bottom:10px}
+.credit-number{font:800 28px Orbitron,sans-serif;color:var(--accent-cyan);margin:5px 0}
+.credit-note{font-size:10px;color:#94a3b8;line-height:1.6}
+.drawer-link{display:flex;align-items:center;gap:10px;text-decoration:none;color:#e2e8f0;border:1px solid rgba(255,255,255,.09);background:#0b111b;border-radius:10px;padding:13px;margin:9px 0;font-size:12px;font-weight:700}
+.drawer-link.whatsapp{border-color:rgba(34,197,94,.35);color:#86efac}
+.premium-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.package-card{background:#0a1019;border:1px solid rgba(168,85,247,.35);border-radius:12px;padding:12px 10px;text-align:left;color:#fff;min-width:0}
+.package-card strong{display:block;font-size:12px;margin-bottom:6px}.package-card span{font-size:10px;color:#a5b4fc;line-height:1.5}
+.package-card a{display:inline-block;margin-top:10px;text-decoration:none;background:linear-gradient(90deg,#7c3aed,#0891b2);color:white;font-size:10px;font-weight:800;border-radius:7px;padding:8px 9px}
+.premium-timer{font:700 15px Orbitron,sans-serif;color:#c4b5fd;margin:8px 0}
+@media(max-width:480px){.brand-title{font-size:19px}.brand-subtitle{display:none}.user-chip{max-width:104px}.user-name{max-width:55px}.header-left{gap:7px}}
+</style>
+
+</head>
+<body>
+
+<!-- ================= LOGIN SCREEN ================= -->
+<div id="loginScreen">
+    <div class="login-card">
+        <h1 class="brand-title">Scriptify</h1>
+        <div class="login-sub">Script Splitter Pro</div>
+
+        <div id="loginChecking" class="login-loading">
+            <i class="fa-solid fa-circle-notch fa-spin"></i> CHECKING SESSION...
+        </div>
+
+        <button id="googleLoginBtn" class="google-btn" style="display:none;" onclick="googleLogin()">
+            <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+            </svg>
+            <span>Continue with Google</span>
+        </button>
+
+        <div id="loginError" class="login-error"></div>
+    </div>
+</div>
+
+<div class="scroll-nav-container" id="scrollNavContainer">
+    <button class="scroll-nav-btn" id="dynamicScrollBtn" onclick="toggleScrollAction()" title="Scroll Navigation">
+        <i class="fa-solid fa-angles-down" id="scrollIcon"></i>
+    </button>
+</div>
+
+<!-- ================= MAIN APP (login এর পর দেখাবে) ================= -->
+<div class="container" id="mainContainer" style="display:none;">
+    <header>
+        <div class="header-left">
+            <button class="menu-trigger" onclick="toggleAccountDrawer(true)" aria-label="Open menu"><i class="fa-solid fa-bars"></i></button>
+            <div class="brand-section">
+                <h1 class="brand-title">Scriptify</h1>
+                <span class="brand-subtitle">Script Splitter</span>
+            </div>
+        </div>
+        <div class="user-chip">
+            <img id="userPhoto" src="" alt="Google profile" referrerpolicy="no-referrer">
+            <span id="userName" class="user-name"></span>
+        </div>
+    </header>
+    
+    <div id="cut" class="content glass-panel">
+        <div class="panel-header">
+            <label class="file-label" for="fileInputCut">
+                <i class="fa-solid fa-file-arrow-up"></i> TXT FILE
+            </label>
+            <div id="cutWords" class="word-count-top">Words: 0</div>
+        </div>
+        <input type="file" id="fileInputCut" accept=".txt" style="display:none;" onchange="handleFileUpload(this, 'cutInput')">
+        
+        <div class="input-wrapper">
+            <textarea id="cutInput" placeholder="Write or paste your full story here..."></textarea>
+            <div class="action-tray">
+                <button id="btnDelCut" class="icon-btn delete" onclick="showPopup('cut')" title="Clear All">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="glass-panel" style="padding: 10px 12px;">
+        <div class="search-row">
+            <div class="search-input-wrapper">
+                <input type="text" id="charName" placeholder="Search (আবির, রিনা)" oninput="saveData('charName');">
+            </div>
+            <button class="extract-btn" onclick="extractDialogs()">
+                <i class="fa-solid fa-bolt-lightning"></i> Extract
+            </button>
+        </div>
+    </div>
+    
+    <div id="cutCounter" class="counter-text"></div>
+    <div id="cutResult" class="result-box"></div>
+    
+    <div id="cutActions" class="btn-group">
+        <button class="cut-btn" onclick="cutContent('cutResult')">
+            <i class="fa-solid fa-scissors"></i> Cut Dialogs
+        </button>
+        <button class="download-btn" onclick="downloadTxt('cutResult', 'dialogs.txt')">
+            <i class="fa-solid fa-cloud-arrow-down"></i> Download
+        </button>
+    </div>
+
+    <div class="undo-btn-wrapper">
+        <button id="undoBtn" class="undo-btn" onclick="handleUndo()">
+            <i class="fa-solid fa-rotate-left"></i> Rollback Cut 
+        </button>
+    </div>
+</div>
+
+<div id="deleteModal" class="modal-overlay">
+    <div class="modal-box">
+        <i class="fa-solid fa-triangle-exclamation" style="font-size:32px; color:var(--neon-pink);"></i>
+        <p style="font-family:'Orbitron', sans-serif; font-weight:700; font-size:12px; margin:14px 0;">WIPE ALL TERMINAL DATA?</p>
+        <div class="modal-btn-group">
+            <button class="modal-btn cancel" onclick="closePopup()">CANCEL</button>
+            <button id="confirmDelBtn" class="modal-btn confirm">WIPE DATA</button>
+        </div>
+    </div>
+</div>
+
+
+<div class="drawer-backdrop" id="accountDrawer" onclick="if(event.target===this)toggleAccountDrawer(false)">
+ <aside class="account-drawer" aria-label="Account menu">
+  <div class="drawer-head"><strong style="font-family:Orbitron,sans-serif;color:var(--accent-cyan)">ACCOUNT MENU</strong><button class="drawer-close" onclick="toggleAccountDrawer(false)" aria-label="Close menu"><i class="fa-solid fa-xmark"></i></button></div>
+  <section class="profile-card">
+   <div class="profile-row"><img id="drawerPhoto" alt="Google profile"><div><div id="drawerName" class="profile-name">Google Account</div><div id="drawerEmail" class="profile-email">Sign in to view account</div></div></div>
+   <span class="readonly-tag"><i class="fa-solid fa-lock"></i> GOOGLE PROFILE · READ ONLY</span>
+  </section>
+  <section class="credit-card"><div class="feature-label"><i class="fa-solid fa-coins"></i> CREDIT BALANCE</div><div class="credit-number" id="creditBalance">2,000</div><div class="credit-note">১ শব্দ = ১ ক্রেডিট। ফ্রি ক্রেডিট প্রতি ২৪ ঘণ্টায় রিফ্রেশ হবে।<br><span id="creditRefresh">পরবর্তী রিফ্রেশ হিসাব হচ্ছে…</span></div></section>
+  <section class="premium-card"><div class="feature-label"><i class="fa-solid fa-bolt"></i> PREMIUM STATUS</div><div id="premiumStatus" style="font-weight:800">Free Plan</div><div class="premium-timer" id="premiumTimer">No active subscription</div><div class="credit-note">Premium কেনার অনুরোধ WhatsApp-এ পাঠান। পেমেন্ট যাচাই ও সক্রিয়করণ সার্ভার সংযোগ ছাড়া স্বয়ংক্রিয় হবে না।</div></section>
+  <div class="feature-label" style="margin-top:18px">PREMIUM PACKAGES</div>
+  <div class="premium-grid">
+   <div class="package-card"><strong>24 Hours</strong><span>১ দিনের Premium</span><br><a href="https://wa.me/218945276955?text=আমি%2024%20Hours%20Premium%20প্যাক%20কিনতে%20চাই" target="_blank" rel="noopener">Buy / Contact</a></div>
+   <div class="package-card"><strong>7 Days</strong><span>৭ দিনের Premium</span><br><a href="https://wa.me/218945276955?text=আমি%207%20Days%20Premium%20প্যাক%20কিনতে%20চাই" target="_blank" rel="noopener">Buy / Contact</a></div>
+   <div class="package-card"><strong>15 Days</strong><span>১৫ দিনের Premium</span><br><a href="https://wa.me/218945276955?text=আমি%2015%20Days%20Premium%20প্যাক%20কিনতে%20চাই" target="_blank" rel="noopener">Buy / Contact</a></div>
+   <div class="package-card"><strong>30 Days</strong><span>৩০ দিনের Premium</span><br><a href="https://wa.me/218945276955?text=আমি%2030%20Days%20Premium%20প্যাক%20কিনতে%20চাই" target="_blank" rel="noopener">Buy / Contact</a></div>
+  </div>
+  <a class="drawer-link whatsapp" href="https://wa.me/218945276955" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp" style="font-size:20px"></i><span>Abir Ahmed Jihad<br><small style="font-weight:400">WhatsApp · Premium Support</small></span><i class="fa-solid fa-arrow-up-right-from-square" style="margin-left:auto"></i></a>
+  <div class="credit-note" style="margin-top:14px">Account controls: Profile details are read-only in this app. Sign-out and account deletion controls are not shown.</div>
+ </aside>
+</div>
+
+<div id="toast"></div>
+
+<!-- ================= FIREBASE (Google Login) ================= -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+    import {
+        getAuth,
+        GoogleAuthProvider,
+        signInWithPopup,
+        signInWithRedirect,
+        getRedirectResult,
+        onAuthStateChanged,
+    } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+
+    // ⬇️⬇️ এখানে তোমার Firebase প্রজেক্টের কনফিগ বসাও ⬇️⬇️
+    // Firebase Console → Project settings → Your apps → Web app → Config
+    const firebaseConfig = {
+        apiKey: "AIzaSyBxw1LC-AfnPC7nd1pMJIK0vh3a3wyQRGI",
+  authDomain: "scriptify-pro-fff53.firebaseapp.com",
+  projectId: "scriptify-pro-fff53",
+  storageBucket: "scriptify-pro-fff53.firebasestorage.app",
+  messagingSenderId: "49957928963",
+  appId: "1:49957928963:web:2ca08261b9a79d8449ce36",
+  measurementId: "G-VVB0T22KSD"
+};
+    // ⬆️⬆️ ----------------------------------------------- ⬆️⬆️
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: "select_account" });
+
+    const loginBtn = document.getElementById("googleLoginBtn");
+    const loginErr = document.getElementById("loginError");
+    const checking = document.getElementById("loginChecking");
+
+    function showLoginError(msg) {
+        loginErr.textContent = msg || "";
+    }
+
+    function friendlyError(err) {
+        switch (err && err.code) {
+            case "auth/popup-closed-by-user":
+            case "auth/cancelled-popup-request":
+                return "লগইন বাতিল করা হয়েছে।";
+            case "auth/network-request-failed":
+                return "ইন্টারনেট সংযোগ চেক করো।";
+            case "auth/unauthorized-domain":
+                return "এই ডোমেইন Firebase → Authentication → Settings → Authorized domains এ যোগ করো।";
+            case "auth/operation-not-allowed":
+                return "Firebase এ Google Sign-in চালু করা হয়নি।";
+            case "auth/invalid-api-key":
+            case "auth/api-key-not-valid.-please-pass-a-valid-api-key.":
+                return "Firebase কনফিগ (apiKey) ঠিক নেই।";
+            default:
+                return "লগইন ব্যর্থ: " + (err && err.message ? err.message : "অজানা সমস্যা");
+        }
+    }
+
+    // Login বাটন
+    window.googleLogin = async function () {
+        showLoginError("");
+        loginBtn.disabled = true;
+        try {
+            await signInWithPopup(auth, provider);
+        } catch (err) {
+            // Popup ব্লক হলে (মোবাইল ব্রাউজার) redirect দিয়ে চেষ্টা
+            if (err.code === "auth/popup-blocked" || err.code === "auth/operation-not-supported-in-this-environment") {
+                try {
+                    await signInWithRedirect(auth, provider);
+                    return;
+                } catch (e2) {
+                    showLoginError(friendlyError(e2));
+                }
+            } else {
+                showLoginError(friendlyError(err));
+            }
+        } finally {
+            loginBtn.disabled = false;
+        }
+    };
+
+    // Redirect লগইনের রেজাল্ট ধরা
+    getRedirectResult(auth).catch((err) => showLoginError(friendlyError(err)));
+
+    // লগইন স্টেট পরিবর্তন হলে
+    onAuthStateChanged(auth, (user) => {
+        checking.style.display = "none";
+        if (user) {
+            window.onUserLogin(user);
+        } else {
+            loginBtn.style.display = "flex";
+            window.onUserLogout();
+        }
+    });
+</script>
+
+<!-- ================= APP LOGIC ================= -->
+<script>
+    let currentDeleteType = '';
+    let historyState = null; 
+    let currentExtractedBlocksIndices = []; 
+    let pureExtractedText = ""; 
+    let extractedDialogIndicesOnly = []; 
+    let isAtBottom = false;
+
+    // প্রতিটা ইউজারের ডাটা আলাদা রাখার জন্য UID প্রিফিক্স
+    let storagePrefix = '';
+    let listenersAttached = false;
+
+    // ===== Auth callbacks (Firebase module থেকে কল হয়) =====
+    window.onUserLogin = function(user) {
+        storagePrefix = user.uid + '_'; window.storagePrefix = storagePrefix;
+
+        document.getElementById('userName').innerText = user.displayName || user.email || 'User';
+        document.getElementById('drawerName').innerText = user.displayName || 'Google Account';
+        document.getElementById('drawerEmail').innerText = user.email || 'Email unavailable';
+        const drawerPhoto = document.getElementById('drawerPhoto');
+        if (user.photoURL) drawerPhoto.src = user.photoURL;
+        else drawerPhoto.src = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><rect width="100%" height="100%" fill="#172033"/><text x="50%" y="55%" font-size="28" text-anchor="middle" fill="#67e8f9">?</text></svg>');
+        const photo = document.getElementById('userPhoto');
+        if (user.photoURL) { photo.src = user.photoURL; photo.style.display = 'block'; }
+        else { photo.style.display = 'none'; }
+
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('mainContainer').style.display = 'block';
+
+        loadSavedData();
+
+        if (!listenersAttached) {
+            document.getElementById('cutInput').addEventListener('input', function() {
+                onInputUpdate('cutInput', 'cutWords', 'btnDelCut');
+            });
+            window.addEventListener('scroll', updateScrollButtonState);
+            listenersAttached = true;
+        }
+
+        showToast("Welcome, " + ((user.displayName || 'User').split(' ')[0]) + "!");
+    };
+
+    window.onUserLogout = function() {
+        storagePrefix = '';
+        historyState = null;
+        currentExtractedBlocksIndices = [];
+        extractedDialogIndicesOnly = [];
+        pureExtractedText = "";
+
+        // স্ক্রিন থেকে ডাটা মুছে ফেলা (localStorage এ সেভ থাকবে, পরে লগইন করলে ফিরে আসবে)
+        document.getElementById('cutInput').value = "";
+        document.getElementById('charName').value = "";
+        document.getElementById('cutResult').style.display = 'none';
+        document.getElementById('cutCounter').style.display = 'none';
+        document.getElementById('cutActions').style.display = 'none';
+        document.getElementById('undoBtn').style.display = 'none';
+        document.getElementById('scrollNavContainer').style.display = 'none';
+        updateWordCount('cutInput', 'cutWords');
+
+        document.getElementById('mainContainer').style.display = 'none';
+        document.getElementById('loginScreen').style.display = 'flex';
+    };
+
+    function loadSavedData() {
+        ['cutInput', 'charName'].forEach(id => {
+            const saved = localStorage.getItem(storagePrefix + id);
+            if (saved) {
+                document.getElementById(id).value = saved;
+                if (id.includes('Input')) {
+                    updateWordCount(id, 'cutWords');
+                    toggleClearBtn(id, 'btnDelCut');
+                }
+            }
+        });
+        if (document.getElementById('cutInput').value && document.getElementById('charName').value) extractDialogs(true);
+    }
+
+    function updateScrollButtonState() {
+        const scrollNav = document.getElementById('scrollNavContainer');
+        const res = document.getElementById('cutResult');
+
+        if (res && res.style.display === 'block') {
+            scrollNav.style.display = 'block';
+        } else {
+            scrollNav.style.display = 'none';
+            return;
+        }
+
+        const icon = document.getElementById('scrollIcon');
+        const scrollPosition = window.innerHeight + window.scrollY;
+        const threshold = document.documentElement.scrollHeight - 100;
+
+        if (scrollPosition >= threshold) {
+            isAtBottom = true;
+            icon.className = "fa-solid fa-angles-up";
+        } else {
+            isAtBottom = false;
+            icon.className = "fa-solid fa-angles-down";
+        }
+    }
+
+    function toggleScrollAction() {
+        if (isAtBottom) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+            window.scrollTo({ 
+                top: Math.max(document.body.scrollHeight, document.documentElement.scrollHeight), 
+                behavior: 'smooth' 
+            });
+        }
+    }
+
+    function cleanBengaliText(str) {
+        if (!str) return "";
+        return str.trim().normalize("NFC");
+    }
+
+    function buildBengaliFlexibleRegex(name) {
+        let normalized = name.normalize("NFC");
+        let escaped = normalized.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+        
+        let flexible = escaped
+            .replace(/(য়|য়্|য\u09BC)/g, "(য়|য\u09BC)")
+            .replace(/ো/g, "(ো|ে\u200B*া)")
+            .replace(/ে\u200B*া/g, "(ো|ে\u200B*া)")
+            .replace(/\u09CB/g, "(\u09CB|\u09C7\u200B*\u09BE)")
+            .replace(/\u09C7\u200B*\u09BE/g, "(\u09CB|\u09C7\u200B*\u09BE)");
+            
+        return flexible;
+    }
+
+    function onInputUpdate(inputId, wordId, btnId) { 
+        saveData(inputId); 
+        updateWordCount(inputId, wordId); 
+        toggleClearBtn(inputId, btnId);
+    }
+
+    function toggleClearBtn(inputId, btnId) {
+        const val = document.getElementById(inputId).value.trim();
+        document.getElementById(btnId).style.display = val.length > 0 ? "flex" : "none";
+    }
+
+    function updateWordCount(inputId, wordId) {
+        const text = document.getElementById(inputId).value.trim();
+        const words = text ? text.split(/\s+/).length : 0;
+        document.getElementById(wordId).innerText = "Words: " + words;
+    }
+
+    function saveData(id) {
+        if (!storagePrefix) return;
+        localStorage.setItem(storagePrefix + id, document.getElementById(id).value);
+    }
+
+    function showPopup(type) { 
+        currentDeleteType = type; 
+        document.getElementById('deleteModal').style.display = 'flex';
+        document.getElementById('confirmDelBtn').onclick = function() { fullClear(currentDeleteType); closePopup(); }; 
+    }
+    function closePopup() { document.getElementById('deleteModal').style.display = 'none'; }
+
+    function fullClear(type) {
+        ['cutInput', 'charName'].forEach(id => { document.getElementById(id).value = ""; localStorage.removeItem(storagePrefix + id); });
+        document.getElementById('cutResult').style.display = 'none';
+        document.getElementById('cutCounter').style.display = 'none';
+        document.getElementById('cutActions').style.display = 'none';
+        document.getElementById('undoBtn').style.display = 'none';
+        historyState = null;
+        currentExtractedBlocksIndices = [];
+        extractedDialogIndicesOnly = [];
+        pureExtractedText = "";
+        updateWordCount('cutInput', 'cutWords');
+        toggleClearBtn('cutInput', 'btnDelCut');
+        updateScrollButtonState(); 
+        showToast("System cleaned!");
+    }
+
+    function handleFileUpload(input, targetId) {
+        const file = input.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => { 
+                document.getElementById(targetId).value = e.target.result; 
+                onInputUpdate(targetId, 'cutWords', 'btnDelCut');
+                extractDialogs(true);
+                showToast("File injected successfully!");
+            };
+            reader.readAsText(file);
+        }
+    }
+
+    function extractDialogs(isInitialLoad = false) {
+        if (document.getElementById('undoBtn').style.display === 'inline-flex' && isInitialLoad) return;
+
+        const mainTextAreaVal = document.getElementById('cutInput').value;
+        const rawNameInput = document.getElementById('charName').value.trim();
+        const res = document.getElementById('cutResult');
+        const ctr = document.getElementById('cutCounter');
+        const acts = document.getElementById('cutActions');
+
+        if(!mainTextAreaVal.trim() || !rawNameInput) {
+            res.style.display = 'none'; ctr.style.display = 'none'; acts.style.display = 'none';
+            updateScrollButtonState();
+            return;
+        }
+
+        const nameList = rawNameInput.split(',').map(n => cleanBengaliText(n)).filter(n => n.length > 0);
+        if (nameList.length === 0) {
+            res.style.display = 'none'; ctr.style.display = 'none'; acts.style.display = 'none';
+            updateScrollButtonState();
+            return;
+        }
+
+        const blocks = mainTextAreaVal.split(/\n\s*\n/);
+        
+        let tempOutput = [];
+        let storyTitle = "";
+        let totalDialogsCount = 0;
+        currentExtractedBlocksIndices = []; 
+        extractedDialogIndicesOnly = []; 
+
+        for (let i = 0; i < blocks.length; i++) {
+            const rawBlock = blocks[i];
+            const trimmedBlock = rawBlock.trim().normalize("NFC");
+            
+            if (i === 0 && trimmedBlock.startsWith('//')) {
+                storyTitle = trimmedBlock.replace(/^\/\/\s*/, '');
+                continue;
+            }
+
+            if (trimmedBlock.startsWith('#')) {
+                let cleanHashText = trimmedBlock.replace(/^#+\s*/, '');
+                tempOutput.push({ type: 'hash', index: i, text: cleanHashText, rawText: trimmedBlock });
+                continue;
+            }
+
+            let matchedNameIndex = -1;
+            let matchedNameStr = "";
+            let matchedPrefix = "";
+
+            for (let nIdx = 0; nIdx < nameList.length; nIdx++) {
+                const curName = nameList[nIdx];
+                const pattern = new RegExp('^([^\\p{L}\\p{N}]*)(' + buildBengaliFlexibleRegex(curName) + ')', 'iu');
+                const match = trimmedBlock.match(pattern);
+                if (match) {
+                    matchedNameIndex = nIdx;
+                    matchedPrefix = match[1];
+                    matchedNameStr = match[2];
+                    break;
+                }
+            }
+
+            if (matchedNameIndex !== -1) {
+                totalDialogsCount++;
+                const matchedLength = matchedPrefix.length + matchedNameStr.length;
+                const restOfBlock = trimmedBlock.substring(matchedLength);
+                
+                const colorClass = 'highlight-name-' + (matchedNameIndex % 4);
+                const formattedText = matchedPrefix + '<span class="' + colorClass + '">' + matchedNameStr + '</span>' + restOfBlock;
+                
+                tempOutput.push({ type: 'dialog', index: i, text: formattedText, rawText: trimmedBlock });
+                continue;
+            }
+            tempOutput.push({ type: 'other', index: i });
+        }
+
+        let html = "";
+        let rawTextForCounting = "";
+        let textForCopyAndDownload = ""; 
+
+        if (storyTitle) {
+            html += '<span class="highlight-title">' + storyTitle + '</span>' + "\n\n";
+            textForCopyAndDownload += storyTitle + "\n\n";
+        }
+
+        for (let i = 0; i < tempOutput.length; i++) {
+            if (tempOutput[i].type === 'hash') {
+                let hasDialog = false;
+                for (let j = i + 1; j < tempOutput.length; j++) {
+                    if (tempOutput[j].type === 'hash') break; 
+                    if (tempOutput[j].type === 'dialog') { hasDialog = true; break; }
+                }
+                if (hasDialog) {
+                    html += '<span class="highlight-hash">' + tempOutput[i].text + '</span>' + "\n\n";
+                    rawTextForCounting += tempOutput[i].text + " ";
+                    textForCopyAndDownload += tempOutput[i].text + "\n\n";
+                    currentExtractedBlocksIndices.push(tempOutput[i].index);
+                }
+            } else if (tempOutput[i].type === 'dialog') {
+                html += tempOutput[i].text + "\n\n";
+                rawTextForCounting += tempOutput[i].rawText + " ";
+                
+                let plainDialog = tempOutput[i].text.replace(/<\/?[^>]+(>|$)/g, "");
+                textForCopyAndDownload += plainDialog + "\n\n";
+                currentExtractedBlocksIndices.push(tempOutput[i].index);
+                extractedDialogIndicesOnly.push(tempOutput[i].index); 
+            }
+        }
+
+        pureExtractedText = textForCopyAndDownload.trim();
+        const totalOutputWords = rawTextForCounting.trim() ? rawTextForCounting.trim().split(/\s+/).length : 0;
+
+        if(totalDialogsCount > 0 || html.length > 0) {
+            ctr.innerText = "TOTAL DIALOGUES MATCHED: " + totalDialogsCount; ctr.style.display = "block";
+            res.innerHTML = '<span class="highlight-meta">TOTAL EXTRACTED WORDS: ' + totalOutputWords + '</span>' + html; 
+            res.style.display = "block";
+            acts.style.display = "grid";
+        } else {
+            if(!isInitialLoad) showToast("No dialogue matched!", "error");
+            res.style.display = 'none'; ctr.style.display = 'none'; acts.style.display = 'none';
+        }
+
+        updateScrollButtonState();
+    }
+
+    function fallbackCopyText(text) {
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        textArea.style.position = "fixed";  
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        try {
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            return true;
+        } catch (err) {
+            document.body.removeChild(textArea);
+            return false;
+        }
+    }
+
+    function cutContent(id) { 
+        const textInput = document.getElementById('cutInput');
+        const resBox = document.getElementById(id);
+        if(!pureExtractedText || !textInput.value.trim()) return;
+
+        historyState = {
+            mainText: textInput.value,
+            resultHtml: resBox.innerHTML,
+            counterText: document.getElementById('cutCounter').innerText
+        };
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(pureExtractedText)
+                .then(() => executeCutLogic())
+                .catch(() => {
+                    if(fallbackCopyText(pureExtractedText)) executeCutLogic();
+                    else showToast("Failed to copy/cut", "error");
+                });
+        } else {
+            if(fallbackCopyText(pureExtractedText)) executeCutLogic();
+            else showToast("Failed to copy/cut", "error");
+        }
+    }
+
+    function executeCutLogic() {
+        const textInput = document.getElementById('cutInput');
+        const originalBlocks = textInput.value.split(/\n\s*\n/);
+        const remainingBlocks = originalBlocks.filter((block, idx) => !extractedDialogIndicesOnly.includes(idx));
+
+        textInput.value = remainingBlocks.join("\n\n");
+        saveData('cutInput');
+        updateWordCount('cutInput', 'cutWords');
+        toggleClearBtn('cutInput', 'btnDelCut');
+        
+        document.getElementById('charName').value = "";
+        localStorage.removeItem(storagePrefix + 'charName');
+
+        document.getElementById('cutResult').style.display = 'none';
+        document.getElementById('cutCounter').style.display = 'none';
+        document.getElementById('cutActions').style.display = 'none';
+        document.getElementById('undoBtn').style.display = 'inline-flex';
+        
+        updateScrollButtonState();
+        showToast("Cut & Copy success!");
+    }
+
+    function handleUndo() {
+        if (historyState) {
+            document.getElementById('cutInput').value = historyState.mainText;
+            saveData('cutInput');
+            updateWordCount('cutInput', 'cutWords');
+            toggleClearBtn('cutInput', 'btnDelCut');
+
+            document.getElementById('cutResult').innerHTML = historyState.resultHtml;
+            document.getElementById('cutResult').style.display = 'block';
+            document.getElementById('cutCounter').innerText = historyState.counterText;
+            document.getElementById('cutCounter').style.display = 'block';
+            document.getElementById('cutActions').style.display = 'grid';
+            document.getElementById('undoBtn').style.display = 'none';
+            historyState = null;
+            
+            updateScrollButtonState();
+            showToast("Rollback success!");
+        }
+    }
+
+    function downloadTxt(id, filename) {
+        if(!pureExtractedText) return;
+        const blob = new Blob([pureExtractedText], { type: 'text/plain' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = filename;
+        link.click();
+        showToast("Download started...");
+    }
+
+    function showToast(msg, type = 'success') {
+        const toast = document.getElementById('toast');
+        toast.style.color = type === 'error' ? 'var(--neon-pink)' : 'var(--accent-cyan)';
+        toast.innerHTML = (type === 'error' ? '<i class="fa-solid fa-circle-xmark"></i> ' : '<i class="fa-solid fa-circle-check"></i> ') + msg;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2500);
+    }
+    window.showToast = showToast;
+</script>
+
+<script>
+/* Prototype-only client-side credit meter. Production balances must be enforced by trusted server code. */
+(function(){
+ const FREE_CREDITS=2000, DAY=24*60*60*1000;
+ let creditKey='', refreshKey='', premiumKey='';
+ window.toggleAccountDrawer=function(open){const el=document.getElementById('accountDrawer');if(el)el.classList.toggle('open',!!open)};
+ function getUserPrefix(){return (window.storagePrefix||'guest_')}
+ function initCredits(){
+   creditKey=getUserPrefix()+'demoCredits';refreshKey=getUserPrefix()+'demoCreditRefresh';premiumKey=getUserPrefix()+'demoPremiumExpiry';
+   let balance=Number(localStorage.getItem(creditKey));
+   if(!Number.isFinite(balance)||localStorage.getItem(creditKey)===null){balance=FREE_CREDITS;localStorage.setItem(creditKey,String(balance));localStorage.setItem(refreshKey,String(Date.now()+DAY))}
+   if(!localStorage.getItem(refreshKey))localStorage.setItem(refreshKey,String(Date.now()+DAY));
+   renderCredits();
+ }
+ function renderCredits(){
+   if(!creditKey)return;
+   let next=Number(localStorage.getItem(refreshKey)||Date.now()+DAY);
+   if(Date.now()>=next){localStorage.setItem(creditKey,String(FREE_CREDITS));next=Date.now()+DAY;localStorage.setItem(refreshKey,String(next))}
+   const balance=Number(localStorage.getItem(creditKey)||0);
+   const bal=document.getElementById('creditBalance');if(bal)bal.textContent=balance.toLocaleString();
+   const ref=document.getElementById('creditRefresh');if(ref){let ms=Math.max(0,next-Date.now());ref.textContent='ফ্রি রিফ্রেশ: '+Math.floor(ms/3600000)+'ঘ '+Math.floor(ms%3600000/60000)+'মি পরে'}
+   const expiry=Number(localStorage.getItem(premiumKey)||0),status=document.getElementById('premiumStatus'),timer=document.getElementById('premiumTimer');
+   if(expiry>Date.now()){if(status)status.textContent='Premium Active (Demo)';if(timer){let ms=expiry-Date.now();timer.textContent=Math.floor(ms/86400000)+'d '+Math.floor(ms%86400000/3600000)+'h '+Math.floor(ms%3600000/60000)+'m remaining'}}
+   else {if(expiry) localStorage.removeItem(premiumKey);if(status)status.textContent='Free Plan';if(timer)timer.textContent='No active subscription'}
+ }
+ window.chargeDemoCredits=function(text){
+   if(!creditKey)initCredits();
+   const count=(text.trim().match(/\S+/g)||[]).length;
+   const balance=Number(localStorage.getItem(creditKey)||0);
+   if(count>balance){window.showToast('ক্রেডিট যথেষ্ট নয়।','error');return false}
+   localStorage.setItem(creditKey,String(balance-count));renderCredits();return true;
+ };
+ const oldLogin=window.onUserLogin;
+ window.onUserLogin=function(user){if(oldLogin)oldLogin(user);initCredits();};
+ const oldLogout=window.onUserLogout;
+ window.onUserLogout=function(){if(oldLogout)oldLogout();creditKey='';refreshKey='';premiumKey='';};
+ const oldExtract=window.extractDialogs;
+ if(typeof oldExtract==='function'){
+   window.extractDialogs=function(isInitialLoad=false){
+     if(!isInitialLoad && document.getElementById('cutInput') && !window.chargeDemoCredits(document.getElementById('cutInput').value))return;
+     return oldExtract.apply(this,arguments);
+   };
+ }
+ initCredits();
+ setInterval(renderCredits,1000);
+})();
+</script>
+
+</body>
+</html>
